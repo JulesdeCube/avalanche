@@ -307,6 +307,7 @@ rec {
   mkInventory =
     { groups ? { }
     , hosts ? { }
+    , defaultModules ? [ ]
     }:
     let
       # Partialy apply the function with the hosts.
@@ -339,7 +340,7 @@ rec {
             groupModule
             # The input configuration from the user.
             config
-          ];
+          ] ++ defaultModules;
         };
       # Function to apply a group to a base system (by it's base name).
       applyGroup = system: groupName:
