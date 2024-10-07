@@ -24,6 +24,9 @@
       # Import function from flake-utils library
       inherit (flake-utils.lib) eachDefaultSystem;
 
+      # Import nixpkgs lib
+      inherit (nixpkgs) lib;
+
       # Small function to import pkgs for the given system ussing the given
       # nixpkgs flake.
       pkgImport = pkgs: system:
@@ -32,7 +35,10 @@
         };
 
       # Output that are not system specific (lib, host configuration, overlay).
-      globalOutput = { };
+      globalOutput = {
+        # Import lib from the lib/default.nix file.
+        lib = import ./lib { inherit lib; };
+      };
 
       # Output system specific (pkgs, check, devShell). `system` is a arguement
       # to geneate the system configuration for the system `system`.
