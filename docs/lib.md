@@ -204,6 +204,10 @@ groups.
 
 ### Inputs
 
+`defaultModules`
+
+: List of avalanche host modules that will be apply to every hosts.
+
 `groups`
 
 : Attribut set of group name and there respective configuration.
@@ -224,6 +228,10 @@ mkInventory :: AttrSet -> AttrSet
 
 ```nix
 lib.mkInventory {
+  defaultModules = [ {
+    nixpkgs.hostPlatform = "x86_64-linux";
+  } ];
+
   groups =
     let
       getIP = value: (builtins.elemAt value.config.networking.interfaces.eno1.ipv4.addresses 0).address;
@@ -235,8 +243,6 @@ lib.mkInventory {
         upstreams.backend.servers = lib.mapAttrs' ( _: value: lib.nameValuePair (getIP value) { }) members;
         virtualHosts._.locations."/".proxyPass = "http://backend";
       };
-
-      nixpkgs.hostPlatform = "x86_64-linux";
     };
   };
 
