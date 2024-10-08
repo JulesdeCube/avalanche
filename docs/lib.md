@@ -197,6 +197,211 @@ lib.getGroupMembers {
 
 :::
 
+## `lib.inventory.padStringLeft` {#function-library-lib.inventory.padStringLeft}
+
+Function to pad a string with a padding patern to the given length by adding
+padding to the left.
+
+### Inputs
+
+`padding`
+
+: String that represent the patten used for padding.
+
+`length`
+
+: Final string length.
+
+`str`
+
+: String that must be pad.
+
+### Type
+
+```
+padStringLeft :: String -> Int -> String -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.padStringLeft` usage example
+
+```nix
+PadStringLeft " " 10 "toto"
+=> "      toto"
+PadStringLeft "_" 2 "toto"
+=> "toto"
+```
+
+:::
+
+## `lib.inventory.padNumber` {#function-library-lib.inventory.padNumber}
+
+Function to pad a number with zero to achive the given length.
+
+### Inputs
+
+`length`
+
+: Final length of the string.
+
+`n`
+
+: Number to pad
+
+### Type
+
+```
+padNumber :: Int -> Int -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.padNumber` usage example
+
+```nix
+PadStringLeft 5 303
+=> "  303"
+PadStringLeft 2 303
+=> "303"
+```
+
+:::
+
+## `lib.inventory.genId` {#function-library-lib.inventory.genId}
+
+Function to genearate a name id.
+
+### Inputs
+
+`id`
+
+: index of the server
+
+### Type
+
+```
+genId :: Int -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.genId` usage example
+
+```nix
+genId 1
+=> "01"
+genId 101
+=> "101"
+```
+
+:::
+
+## `lib.inventory.genHostname` {#function-library-lib.inventory.genHostname}
+
+Function to generate a hostname base on a name and id.
+
+### Inputs
+
+`name`
+
+: name of the
+
+`id`
+
+: index of the server
+
+### Type
+
+```
+genHostname :: String -> Int -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.genHostname` usage example
+
+```nix
+genHostname "lb" 1
+=> "lb01"
+genHostname "node" 20
+=> "node20"
+```
+
+:::
+
+## `lib.inventory.addSpecialArgs` {#function-library-lib.inventory.addSpecialArgs}
+
+Function to wrap module and add extra speical argument to the call of a
+function or attribut set.
+
+### Inputs
+
+`speicalArgs`
+
+: attibut set of exta aguments.
+
+`module`
+
+: NixOS module
+
+### Type
+
+```
+addSpecialArgs :: AttrSet -> (AttrSet | AttrSet -> AttrSet) -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.addSpecialArgs` usage example
+
+```nix
+addSpecialArgs { a = 1; } ({ a, ... }: { b = a; })
+=> { b = 1; }
+addSpecialArgs { a = 1; } { b = 2; }
+=> { b = 2; }
+```
+
+:::
+
+## `lib.inventory.genHosts` {#function-library-lib.inventory.genHosts}
+
+Function to generate an set of host with incremental hostname base on a
+system configuration.
+
+### Inputs
+
+`config`
+
+: the configuration that will be used for every host.
+
+`prefix`
+
+: prefix use before the incremental index
+
+`number`
+
+: number of host to generate
+
+### Type
+
+```
+genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrSet -> AttrSet)
+```
+
+### Examples
+:::{.example}
+#### `lib.addSpecialArgs` usage example
+
+```nix
+addSpecialArgs { a = 1; } ({ a, ... }: { b = a; })
+=> { b = 1; }
+addSpecialArgs { a = 1; } { b = 2; }
+=> { b = 2; }
+```
+
+:::
+
 ## `lib.inventory.mkInventory` {#function-library-lib.inventory.mkInventory}
 
 Generate each system configuration base on the input configuration and the

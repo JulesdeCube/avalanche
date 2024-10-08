@@ -241,7 +241,256 @@ rec {
     :::
   */
   getGroupMembers = systems: groupName:
+    # Filter attribut and check if the group name is in the system group list
+    # options.
     lib.filterAttrs (_: system: isInGroup system groupName) systems;
+
+  /**
+    Function to pad a string with a padding patern to the given length by adding
+    padding to the left.
+
+    # Inputs
+
+    `padding`
+
+    : String that represent the patten used for padding.
+
+    `length`
+
+    : Final string length.
+
+    `str`
+
+    : String that must be pad.
+
+    # Type
+
+    ```
+    padStringLeft :: String -> Int -> String -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.padStringLeft` usage example
+
+    ```nix
+    PadStringLeft " " 10 "toto"
+    => "      toto"
+    PadStringLeft "_" 2 "toto"
+    => "toto"
+    ```
+
+    :::
+  */
+  padStringLeft = padding: length: str:
+    # Check if the string is at list the right size.
+    if (builtins.stringLength str) < length then
+    # Call recusivly by adding  padding to the string
+      padStringLeft padding length (padding + str)
+    else
+    # When the string size math the desire length juste return the string.
+      str;
+
+  /**
+    Function to pad a number with zero to achive the given length.
+
+    # Inputs
+
+    `length`
+
+    : Final length of the string.
+
+    `n`
+
+    : Number to pad
+
+    # Type
+
+    ```
+    padNumber :: Int -> Int -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.padNumber` usage example
+
+    ```nix
+    PadStringLeft 5 303
+    => "  303"
+    PadStringLeft 2 303
+    => "303"
+    ```
+
+    :::
+  */
+  padNumber = length: n:
+    # Pad with 0 for the given lenth also convert the interger to string.
+    padStringLeft "0" length (builtins.toString n);
+
+  /**
+    Function to genearate a name id.
+
+    # Inputs
+
+    `id`
+
+    : index of the server
+
+    # Type
+
+    ```
+    genId :: Int -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.genId` usage example
+
+    ```nix
+    genId 1
+    => "01"
+    genId 101
+    => "101"
+    ```
+
+    :::
+  */
+  genId =
+    # Hostname index is a 2 digit number.
+    padNumber 2;
+
+  /**
+    Function to generate a hostname base on a name and id.
+
+    # Inputs
+
+    `name`
+
+    : name of the
+
+    `id`
+
+    : index of the server
+
+    # Type
+
+    ```
+    genHostname :: String -> Int -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.genHostname` usage example
+
+    ```nix
+    genHostname "lb" 1
+    => "lb01"
+    genHostname "node" 20
+    => "node20"
+    ```
+
+    :::
+  */
+  genHostname = name: id:
+    # Hostname is the chousen name follow by a 2 digit index.
+    "${name}${genId id}";
+
+  /**
+    Function to wrap module and add extra speical argument to the call of a
+    function or attribut set.
+
+    # Inputs
+
+    `speicalArgs`
+
+    : attibut set of exta aguments.
+
+    `module`
+
+    : NixOS module
+
+    # Type
+
+    ```
+    addSpecialArgs :: AttrSet -> (AttrSet | AttrSet -> AttrSet) -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.addSpecialArgs` usage example
+
+    ```nix
+    addSpecialArgs { a = 1; } ({ a, ... }: { b = a; })
+    => { b = 1; }
+    addSpecialArgs { a = 1; } { b = 2; }
+    => { b = 2; }
+    ```
+
+    :::
+  */
+  addSpecialArgs = specialArgs: module:
+    # Check if the module is a function
+    if builtins.isFunction module then
+    # If it's a function wrap the module function and append special argument
+    # to the inputs.
+      inputs: module (inputs // specialArgs)
+    else
+    # If it's a attribut set juste return it.
+      module;
+
+  /**
+    Function to generate an set of host with incremental hostname base on a
+    system configuration.
+
+    # Inputs
+
+    `config`
+
+    : the configuration that will be used for every host.
+
+    `prefix`
+
+    : prefix use before the incremental index
+
+    `number`
+
+    : number of host to generate
+
+    # Type
+
+    ```
+    genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrSet -> AttrSet)
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.genHosts` usage example
+
+    ```nix
+    genHosts ({ ... }: { }) "lb" 2
+    => { lb01 = {...}: { };  lb02 = {...}: { }; }
+    genHosts { } "empty" 0
+    => {  }
+    ```
+
+    :::
+  */
+  genHosts = config: prefix: number:
+    let
+      # Partialy apply genHostname with the prefix.
+      genHostname' = genHostname prefix;
+      # Function that take the id and generate the hostname and identifiver
+      genHostEntry = id: {
+        # The name is the hostname (add 1 because it's start at 0).
+        name = genHostname' (id + 1);
+        # Value is the system configuration with the id parameter append to it.
+        value = addSpecialArgs { inherit id; } config;
+      };
+      # Generate the list of all host parameter (hostanme and id).
+      hostsEntries = builtins.genList genHostEntry number;
+    in
+    # Convert the list of entry (name/value) into a attribut set.
+    builtins.listToAttrs hostsEntries;
 
   /**
     Generate each system configuration base on the input configuration and the
