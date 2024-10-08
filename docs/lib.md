@@ -204,6 +204,11 @@ groups.
 
 ### Inputs
 
+`extraArgs`
+
+: Attribut set to append to [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)]
+  `extraArgs` arguements.
+
 `defaultModules`
 
 : List of avalanche host modules that will be apply to every hosts.
@@ -228,6 +233,10 @@ mkInventory :: AttrSet -> AttrSet
 
 ```nix
 lib.mkInventory {
+  extraArgs = {
+    backendName = "backend";
+  };
+
   defaultModules = [ {
     nixpkgs.hostPlatform = "x86_64-linux";
   } ];
@@ -236,12 +245,12 @@ lib.mkInventory {
     let
       getIP = value: (builtins.elemAt value.config.networking.interfaces.eno1.ipv4.addresses 0).address;
     in {
-    group1 = {members, ...}: {
+    group1 = {members, backendName, ...}: {
       services.nginx = {
         enable = true;
 
-        upstreams.backend.servers = lib.mapAttrs' ( _: value: lib.nameValuePair (getIP value) { }) members;
-        virtualHosts._.locations."/".proxyPass = "http://backend";
+        upstreams.${backendName}.servers = lib.mapAttrs' ( _: value: lib.nameValuePair (getIP value) { }) members;
+        virtualHosts._.locations."/".proxyPass = "http://${backendName}";
       };
     };
   };

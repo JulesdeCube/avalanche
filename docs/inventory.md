@@ -11,6 +11,8 @@ It's compose of 3 arguements:
 
 - `defaultModules`: List of [avalanche host modules](./docs/host.md#module) that
   will be apply to each hosts.
+- `extraArgs`: attribut set pass to [NixosSystems](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L22)
+  to pass extra argument to the modules.
 - `group`: attribut set of [avalanche group modules](./docs/group.md#module)
   that will be apply to hosts that are apparte of the group.
 - `hosts`: the host specific [avalanche host modules](./docs/host.md#module).
@@ -19,6 +21,7 @@ It's compose of 3 arguements:
 
 ```nix
 lib.mkInventory {
+  extraArgs = {};
   defaultModules = [];
   groups = { };
   hosts = { };

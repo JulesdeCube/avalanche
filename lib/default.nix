@@ -249,6 +249,11 @@ rec {
 
     # Inputs
 
+    `extraArgs`
+
+    : Attribut set to append to [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)]
+      `extraArgs` arguements.
+
     `defaultModules`
 
     : List of avalanche host modules that will be apply to every hosts.
@@ -273,6 +278,10 @@ rec {
 
     ```nix
     lib.mkInventory {
+      extraArgs = {
+        backendName = "backend";
+      };
+
       defaultModules = [ {
         nixpkgs.hostPlatform = "x86_64-linux";
       } ];
@@ -281,12 +290,12 @@ rec {
         let
           getIP = value: (builtins.elemAt value.config.networking.interfaces.eno1.ipv4.addresses 0).address;
         in {
-        group1 = {members, ...}: {
+        group1 = {members, backendName, ...}: {
           services.nginx = {
             enable = true;
 
-            upstreams.backend.servers = lib.mapAttrs' ( _: value: lib.nameValuePair (getIP value) { }) members;
-            virtualHosts._.locations."/".proxyPass = "http://backend";
+            upstreams.${backendName}.servers = lib.mapAttrs' ( _: value: lib.nameValuePair (getIP value) { }) members;
+            virtualHosts._.locations."/".proxyPass = "http://${backendName}";
           };
         };
       };
@@ -314,6 +323,7 @@ rec {
     { groups ? { }
     , hosts ? { }
     , defaultModules ? [ ]
+    , extraArgs ? { }
     }:
     let
       # Partialy apply the function with the hosts.
@@ -337,7 +347,8 @@ rec {
             groupsMembers = groupsMembers;
             # Attribute set of every hosts.
             hosts = finalSystems;
-          };
+            # Add extra arguments from user inputs.
+          } // extraArgs;
           modules = [
             # Generate the hostname module base on the fqdn given via the
             # attribut set.
@@ -364,7 +375,8 @@ rec {
             groupsMembers = groupsMembers;
             # Attribut set of every hosts.
             hosts = finalSystems;
-          };
+            # Add extra arguments from user inputs.
+          } // extraArgs;
           # Apply the given group.
           modules = [ groups.${groupName} ];
         };
