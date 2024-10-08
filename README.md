@@ -7,3 +7,5 @@ library to generate complex NixOS configuration.
 
 This project is inspire by [Ansible](https://www.ansible.com/) the defunct
 [NixOps](https://github.com/NixOS/nixops) project.
+
+  };

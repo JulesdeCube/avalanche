@@ -1,4 +1,4 @@
-{ lib }:
+{ lib ? (import <nixpkgs>).lib }:
 rec {
   /**
     Function to generate a nixos module that set the hostName and the domain
