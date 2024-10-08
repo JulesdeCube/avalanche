@@ -125,3 +125,7 @@ following a `flake.nix` to deploy a loadbalanced dns server:
 ```
 
 You can found more example in the [`example` folder](./examples/).
+
+## Documentation
+
+You can found the project documentation inside the [`docs` folder](./docs/index.md)
