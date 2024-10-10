@@ -589,7 +589,7 @@ rec {
         lib.nixosSystem {
           # Add extra agrument (depricated) to get list of groups the members of
           # each group and the list of every systems.
-          extraArgs = {
+          specialArgs = {
             # Attribute set of every group (and they name).
             groups = groupsNames;
             # Attribute set of every group memebers.
