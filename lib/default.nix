@@ -99,7 +99,7 @@ rec {
       options.groups = mkOption {
         # The groups option is the the names of the groups to bypass any
         # possible multi instantionation of the same groupe.
-        type = types.listOf types.string;
+        type = types.listOf types.str;
         # By default incude no group (make the option optional).
         default = [ ];
         # Descrition of the module (use mdDoc to use markdown).
