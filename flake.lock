@@ -56,11 +56,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1727514110,
-        "narHash": "sha256-0YRcOxJG12VGDFH8iS8pJ0aYQQUAgo/r3ZAL+cSh9nk=",
+        "lastModified": 1728580416,
+        "narHash": "sha256-nKttjKg6lE7O5S+wlBOkXsUGdOgVxZ8SWaCOyodW5so=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "85f7a7177c678de68224af3402ab8ee1bcee25c8",
+        "rev": "4ebefcac44b5116cf5741be858245db769ddedd1",
         "type": "github"
       },
       "original": {
@@ -114,11 +114,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1727540905,
-        "narHash": "sha256-40J9tW7Y794J7Uw4GwcAKlMxlX2xISBl6IBigo83ih8=",
+        "lastModified": 1728500571,
+        "narHash": "sha256-dOymOQ3AfNI4Z337yEwHGohrVQb4yPODCW9MDUyAc4w=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "fbca5e745367ae7632731639de5c21f29c8744ed",
+        "rev": "d51c28603def282a24fa034bcb007e2bcb5b5dd0",
         "type": "github"
       },
       "original": {
@@ -156,11 +156,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1727626495,
-        "narHash": "sha256-bAbAZK8zTmoR4CP/Y5V5+q8iAy6nWfaOUSjxQTQX4FY=",
+        "lastModified": 1728591733,
+        "narHash": "sha256-lcZ0P+If8r+BhyL+DBTsfNvARxYtT5WF9AeEB/pCTLE=",
         "ref": "refs/heads/main",
-        "rev": "fe2df386c1d33afc3c268410ec47a515d1f12c61",
-        "revCount": 19,
+        "rev": "b1bc7866511aa53672cd0d116390bc3d80406507",
+        "revCount": 20,
         "type": "git",
         "url": "https://gitlab.julesdecube.com/infra/snowball.git"
       },
