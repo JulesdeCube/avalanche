@@ -8,7 +8,7 @@ rec {
 
     `fqdn`
 
-    : Full qualiter domaine name of the host.
+    : Full qualiter domain name of the host.
 
     # Type
 
@@ -31,23 +31,324 @@ rec {
   */
   mkHostNameModule = fqdn:
     let
-      # Get each label that compose the fqdn (label1.label2.lable3).
-      labels = lib.splitString "." fqdn;
+      # Parse fqdn to extract domain and hostname.
+      info = getFqdnInfo fqdn;
     in
     {
       networking = {
-        # The hostname of the first label of the fqdn.
-        hostName = builtins.elemAt labels 0;
-        domain =
-          # The domain is null if there is only one (it's the hostname).
-          if (builtins.length labels) == 1 then
-          # Null if the default non value.
-            null
-          else
-          # Otherwith rebuild the domain without the first label.
-            lib.intersperse "." (lib.drop 1 labels);
+        # Rename capitalise of hostname from info.
+        hostName = info.hostname;
+        # Retrive domain from info.
+        inherit (info) domain;
       };
     };
+
+  /**
+    Function that convert a list of dns labels to a full qualifer domain name.
+
+    # Inputs
+
+    `lables`
+
+    : List of labels to concat.
+
+    # Type
+
+    ```
+    labelsToDomain :: [String] -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.labelsToDomain` usage example
+
+    ```nix
+    labelsToDomain [ "node01", "sub-domain", "domain", "tld" ]
+    => "node01.sub-domain.domain.tld"
+    labelsToDomain [ "node01" ]
+    => "node01"
+    ```
+
+    :::
+  */
+  # There is no parameter because the concatStringSep is a partial apply
+  # function.
+  labelsToDomain =
+    # Just concat string with ".""
+    builtins.concatStringsSep ".";
+
+  /**
+    Parse a Full Qualifer Domain Name and retrive it's labels, hostname and
+    domain.
+
+    # Inputs
+
+    `fqdn`
+
+    : Full qualifer domain name to parse.
+
+    # Type
+
+    ```
+    getFqdnInfo :: String -> {
+      labels = [String];
+      hostname = String;
+      domain = String;
+    }
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.getFqdnInfo` usage example
+
+    ```nix
+    getFqdnInfo "node01.sub-domain.domain.tld"
+    => {
+      labels = [ "node01", "sub-domain", "domain", "tld" ];
+      hostname = "node01";
+      domain = "sub-domain.domain.tld";
+    }
+    labelsToDomain "node01"
+    => {
+      labels = [ "node01" ];
+      hostname = "node01";
+      domain = null;
+    }
+    ```
+
+    :::
+  */
+  getFqdnInfo = fqdn:
+    let
+      # Get each label that compose the fqdn (label1.label2.lable3).
+      rawLabels = lib.splitString "." fqdn;
+    in
+    rec {
+      # Filter empty labels.
+      labels = builtins.filter (label: label != "") rawLabels;
+
+      # The hostname of the first label of the fqdn.
+      hostname = builtins.elemAt labels 0;
+
+      # The domain is null if there is only one (it's the hostname).
+      domain =
+        if (builtins.length labels) == 1 then
+        # Null if the default non value.
+          null
+        else
+        # Otherwith rebuild the domain without the first label.
+          labelsToDomain (lib.drop 1 labels);
+    };
+
+  /**
+    Append 2 domains together.
+
+    # Inputs
+
+    `domain1`
+
+    : First domain that will be append at the front.
+
+    `domain2`
+
+    : Second domain that will be append at the back.
+
+    # Type
+
+    ```
+    appendDomain :: String -> String -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.appendDomain` usage example
+
+    ```nix
+    appendDomain "node01.sub-domain" "domain.tld"
+    => "node01.sub-domain.domain.tld"
+    appendDomain "node01" ""
+    => "node01"
+    ```
+
+    :::
+  */
+  appendDomain = domain1: domain2:
+    let
+      # Parse first domain.
+      info1 = getFqdnInfo domain1;
+      # Parse second domain.
+      info2 = getFqdnInfo domain2;
+    in
+    # Generate the combine domain by merging both labels and combined it back to
+      # a string.
+    labelsToDomain (info1.labels ++ info2.labels);
+
+  /**
+    Set the domain part of a FQDN.
+
+    # Inputs
+
+    `fqdn`
+
+    : The Full Qualifer Domain Name that must be modify.
+
+    `domain`
+
+    : the domain that will replace the `fqdn` domain.
+
+    # Type
+
+    ```
+    setDomain :: String -> String -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.setDomain` usage example
+
+    ```nix
+    setDomain "node01.sub-domain.domain.tld" "other-domain.other-tld"
+    => "node01.sub-domain.domain.tld"
+    setDomain "node01.sub-domain.domain.tld" ""
+    => "node01"
+    ```
+
+    :::
+  */
+  # Don't put the domain parameter because the appendDomain method is partialy
+  # apply.
+  setDomain = fqdn:
+    let
+      # Parse the FQDN to be able to extract the hostname.
+      info = getFqdnInfo fqdn;
+    in
+    # Use the appendDomain method to merge the hostname and the domain.
+    appendDomain info.hostname;
+
+  /**
+    Function to map/modify Full Qualifer Domain Name of an hosts attributs set
+    base on a given function.
+
+    # Inputs
+
+    `f`
+
+    : The mapping function that take the fqdn and the configuration as
+      parameter.
+
+    `hosts`
+
+    : The attribut ser of hosts by the Full Qualifer Domain Name.
+
+    # Type
+
+    ```
+    mapHostsFqdn :: (String -> (AttrSet | AttrSet -> AttrSet ) -> String) -> AttrSet -> AttrSet
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.mapHostsFqdn` usage example
+
+    ```nix
+    mapHostsFqdn (fqdn: _: "private-${fqdn}") { runner01 = {}; runner02 = {}; }
+    => { private-runner01 = {}; private-runner02 = {}; }
+    mapHostsFqdn (fqdn: _: nixpkgs.lib.toUpper fqdn) { ad01 = {...}: { };  dns01 = {...}: { }; }
+    => { AD01 = {...}: { };  DNS01 = {...}: { }; }
+    ```
+
+    :::
+  */
+  # Don't put hosts argument as it's a partialy apply function and the argument
+  # is directly pass to the mapAttrs' function.
+  mapHostsFqdn = f:
+    # Use  mapAttrs' to be able to modify the name (value/config is pass
+    # directly).
+    lib.mapAttrs' (fqdn: config: {
+      # The name is mapped from the input function and the previous fqdn and
+      # config.
+      name = f fqdn config;
+      # Config is juste rename as value.
+      value = config;
+    });
+
+  /**
+    Set the domain of each hosts Full Qualifer Domain Name.
+
+    # Inputs
+
+    `domain`
+
+    : The domain that must replace the current one.
+
+    `hosts`
+
+    : The attribut ser of hosts by the Full Qualifer Domain Name.
+
+    # Type
+
+    ```
+    setHostDomain :: String -> AttrSet -> AttrSet
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.setHostsDomain` usage example
+
+    ```nix
+    setHostsDomain "domain.tld" { runner01 = {}; runner02 = {}; }
+    => { "runner01.domain.tld" = {}; "runner02.domain.tld" = {}; }
+    setHostsDomain "" { "ad01.example.com" = {...}: { };  }
+    => { ad01 = {...}: { }; }
+    setHostsDomain "domain.tld" { "ad01.example.com" = {...}: { };  }
+    => { "ad01.domain.tld" = {...}: { }; }
+    ```
+
+    :::
+  */
+  # No hosts parameter as mapHostsFqdn is partialy apply.
+  setHostsDomain = domain:
+    # Use the setDomain to set the domain on every fqdn
+    mapHostsFqdn (fqdn: _: setDomain fqdn domain);
+
+  /**
+    Append the given domain at the front of the Full Qualifer Domain Name.
+
+    # Inputs
+
+    `domain`
+
+    : The domain that must be append at the beggining of the fqdn.
+
+    `hosts`
+
+    : The attribut ser of hosts by the Full Qualifer Domain Name.
+
+    # Type
+
+    ```
+    appendHostDomain :: String -> AttrSet -> AttrSet
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.appendHostsDomain` usage example
+
+    ```nix
+    setHostsDomain "domain.tld" { runner01 = {}; runner02 = {}; }
+    => { "runner01.domain.tld" = {}; "runner02.domain.tld" = {}; }
+    setHostsDomain "" { "ad01.example.com" = {...}: { };  }
+    => { ad01.example.com = {...}: { }; }
+    setHostsDomain "domain.tld" { "ad01.private" = {...}: { };  }
+    => { "ad01.private.domain.tld" = {...}: { }; }
+    ```
+
+    :::
+  */
+  # No hosts parameter as appendHostsDomain is partialy apply.
+  appendHostsDomain = domain:
+    # Use the appendDomain to append the domain on every fqdn.
+    mapHostsFqdn (fqdn: _: appendDomain fqdn domain);
 
   /**
     Modules use to define group in an Inventory.

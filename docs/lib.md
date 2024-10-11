@@ -10,7 +10,7 @@ base on the `fqdn` parameter.
 
 `fqdn`
 
-: Full qualiter domaine name of the host.
+: Full qualiter domain name of the host.
 
 ### Type
 
@@ -27,6 +27,248 @@ hostNameModule "host1.example.com"
 => { networking = { hostName = "host1"; domain = "example.com"; }; }
 hostNameModule "host1"
 => { networking = { hostName = "host1"; domain = null; }; }
+```
+
+:::
+
+## `lib.inventory.labelsToDomain` {#function-library-lib.inventory.labelsToDomain}
+
+Function that convert a list of dns labels to a full qualifer domain name.
+
+### Inputs
+
+`lables`
+
+: List of labels to concat.
+
+### Type
+
+```
+labelsToDomain :: [String] -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.labelsToDomain` usage example
+
+```nix
+labelsToDomain [ "node01", "sub-domain", "domain", "tld" ]
+=> "node01.sub-domain.domain.tld"
+labelsToDomain [ "node01" ]
+=> "node01"
+```
+
+:::
+
+## `lib.inventory.getFqdnInfo` {#function-library-lib.inventory.getFqdnInfo}
+
+Parse a Full Qualifer Domain Name and retrive it's labels, hostname and
+domain.
+
+### Inputs
+
+`fqdn`
+
+: Full qualifer domain name to parse.
+
+### Type
+
+```
+getFqdnInfo :: String -> {
+  labels = [String];
+  hostname = String;
+  domain = String;
+}
+```
+
+### Examples
+:::{.example}
+#### `lib.getFqdnInfo` usage example
+
+```nix
+getFqdnInfo "node01.sub-domain.domain.tld"
+=> {
+  labels = [ "node01", "sub-domain", "domain", "tld" ];
+  hostname = "node01";
+  domain = "sub-domain.domain.tld";
+}
+labelsToDomain "node01"
+=> {
+  labels = [ "node01" ];
+  hostname = "node01";
+  domain = null;
+}
+```
+
+:::
+
+## `lib.inventory.appendDomain` {#function-library-lib.inventory.appendDomain}
+
+Append 2 domains together.
+
+### Inputs
+
+`domain1`
+
+: First domain that will be append at the front.
+
+`domain2`
+
+: Second domain that will be append at the back.
+
+### Type
+
+```
+appendDomain :: String -> String -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.appendDomain` usage example
+
+```nix
+appendDomain "node01.sub-domain" "domain.tld"
+=> "node01.sub-domain.domain.tld"
+appendDomain "node01" ""
+=> "node01"
+```
+
+:::
+
+## `lib.inventory.setDomain` {#function-library-lib.inventory.setDomain}
+
+Set the domain part of a FQDN.
+
+### Inputs
+
+`fqdn`
+
+: The Full Qualifer Domain Name that must be modify.
+
+`domain`
+
+: the domain that will replace the `fqdn` domain.
+
+### Type
+
+```
+setDomain :: String -> String -> String
+```
+
+### Examples
+:::{.example}
+#### `lib.setDomain` usage example
+
+```nix
+setDomain "node01.sub-domain.domain.tld" "other-domain.other-tld"
+=> "node01.sub-domain.domain.tld"
+setDomain "node01.sub-domain.domain.tld" ""
+=> "node01"
+```
+
+:::
+
+## `lib.inventory.mapHostsFqdn` {#function-library-lib.inventory.mapHostsFqdn}
+
+Function to map/modify Full Qualifer Domain Name of an hosts attributs set
+base on a given function.
+
+### Inputs
+
+`f`
+
+: The mapping function that take the fqdn and the configuration as
+  parameter.
+
+`hosts`
+
+: The attribut ser of hosts by the Full Qualifer Domain Name.
+
+### Type
+
+```
+mapHostsFqdn :: (String -> (AttrSet | AttrSet -> AttrSet ) -> String) -> AttrSet -> AttrSet
+```
+
+### Examples
+:::{.example}
+#### `lib.mapHostsFqdn` usage example
+
+```nix
+mapHostsFqdn (fqdn: _: "private-${fqdn}") { runner01 = {}; runner02 = {}; }
+=> { private-runner01 = {}; private-runner02 = {}; }
+mapHostsFqdn (fqdn: _: nixpkgs.lib.toUpper fqdn) { ad01 = {...}: { };  dns01 = {...}: { }; }
+=> { AD01 = {...}: { };  DNS01 = {...}: { }; }
+```
+
+:::
+
+## `lib.inventory.setHostsDomain` {#function-library-lib.inventory.setHostsDomain}
+
+Set the domain of each hosts Full Qualifer Domain Name.
+
+### Inputs
+
+`domain`
+
+: The domain that must replace the current one.
+
+`hosts`
+
+: The attribut ser of hosts by the Full Qualifer Domain Name.
+
+### Type
+
+```
+setHostDomain :: String -> AttrSet -> AttrSet
+```
+
+### Examples
+:::{.example}
+#### `lib.setHostsDomain` usage example
+
+```nix
+setHostsDomain "domain.tld" { runner01 = {}; runner02 = {}; }
+=> { "runner01.domain.tld" = {}; "runner02.domain.tld" = {}; }
+setHostsDomain "" { "ad01.example.com" = {...}: { };  }
+=> { ad01 = {...}: { }; }
+setHostsDomain "domain.tld" { "ad01.example.com" = {...}: { };  }
+=> { "ad01.domain.tld" = {...}: { }; }
+```
+
+:::
+
+## `lib.inventory.appendHostsDomain` {#function-library-lib.inventory.appendHostsDomain}
+
+Append the given domain at the front of the Full Qualifer Domain Name.
+
+### Inputs
+
+`domain`
+
+: The domain that must be append at the beggining of the fqdn.
+
+`hosts`
+
+: The attribut ser of hosts by the Full Qualifer Domain Name.
+
+### Type
+
+```
+appendHostDomain :: String -> AttrSet -> AttrSet
+```
+
+### Examples
+:::{.example}
+#### `lib.appendHostsDomain` usage example
+
+```nix
+setHostsDomain "domain.tld" { runner01 = {}; runner02 = {}; }
+=> { "runner01.domain.tld" = {}; "runner02.domain.tld" = {}; }
+setHostsDomain "" { "ad01.example.com" = {...}: { };  }
+=> { ad01.example.com = {...}: { }; }
+setHostsDomain "domain.tld" { "ad01.private" = {...}: { };  }
+=> { "ad01.private.domain.tld" = {...}: { }; }
 ```
 
 :::
@@ -391,13 +633,13 @@ genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrS
 
 ### Examples
 :::{.example}
-#### `lib.addSpecialArgs` usage example
+#### `lib.genHosts` usage example
 
 ```nix
-addSpecialArgs { a = 1; } ({ a, ... }: { b = a; })
-=> { b = 1; }
-addSpecialArgs { a = 1; } { b = 2; }
-=> { b = 2; }
+genHosts ({ ... }: { }) "lb" 2
+=> { lb01 = {...}: { };  lb02 = {...}: { }; }
+genHosts { } "empty" 0
+=> {  }
 ```
 
 :::
