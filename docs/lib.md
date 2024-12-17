@@ -273,6 +273,37 @@ setHostsDomain "domain.tld" { "ad01.private" = {...}: { };  }
 
 :::
 
+## `lib.inventory.importDomains` {#function-library-lib.inventory.importDomains}
+
+Import sub group by passing it's inputs and append the key as domain.
+
+### Inputs
+
+`inputs`
+
+:  The inputs to pass to the imported module.
+
+`domaines`
+
+:  The attribut set of domain and they hosts or import path.
+
+### Type
+
+```
+importDomains :: Any -> AttrSet -> AttrSet
+```
+
+### Example
+:::{.example}
+#### `lib.importDomains` usage example
+
+```nix
+ importDomains {inherit lib;} { "tld1" = ./tld1; "tld2" = {"host1" = {...}: { };}; }
+=> { "host1.tld1" = {...}: { }; "host2.tld1" = {...}: { };, "host1.tld2" = {...}: { }; }
+```
+
+:::
+
 ## `lib.inventory.groupModule` {#function-library-lib.inventory.groupModule}
 
 Modules use to define group in an Inventory.
@@ -720,4 +751,5 @@ lib.mkInventory {
 ```
 
 :::
+
 

@@ -351,6 +351,50 @@ rec {
     mapHostsFqdn (fqdn: _: appendDomain fqdn domain);
 
   /**
+    Import sub group by passing it's inputs and append the key as domain.
+
+    # Inputs
+
+    `inputs`
+
+    :  The inputs to pass to the imported module.
+
+    `domaines`
+
+    :  The attribut set of domain and they hosts or import path.
+
+    # Type
+
+    ```
+    importDomains :: Any -> AttrSet -> AttrSet
+    ```
+
+    # Example
+    :::{.example}
+    ## `lib.importDomains` usage example
+
+    ```nix
+     importDomains {inherit lib;} { "tld1" = ./tld1; "tld2" = {"host1" = {...}: { };}; }
+    => { "host1.tld1" = {...}: { }; "host2.tld1" = {...}: { };, "host1.tld2" = {...}: { }; }
+    ```
+
+    :::
+  */
+  importDomains = inputs:
+    let
+      mapping = domain: content:
+        let
+          hosts =
+            if builtins.isAttrs content then
+              content
+            else
+              (import content) inputs;
+        in
+        appendHostsDomain domain hosts;
+    in
+    lib.concatMapAttrs mapping
+  ;
+  /**
     Modules use to define group in an Inventory.
 
     This module is useless without the use of [`mkInventory`](#mkInventory).
