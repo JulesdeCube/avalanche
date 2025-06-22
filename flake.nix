@@ -84,7 +84,7 @@
               packages = with pkgs; [
                 git
 
-                nil
+                nixd
               ];
             };
           };
