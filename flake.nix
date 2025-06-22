@@ -60,7 +60,7 @@
               # List of hooks runs
               hooks = {
                 # Eanble nixpkgs-fmt
-                nixpkgs-fmt.enable = true;
+                nixfmt-rfc-style.enable = true;
                 # Enable markdown lint
                 markdownlint.enable = true;
               };
