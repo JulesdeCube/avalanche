@@ -84,6 +84,8 @@
               packages = with pkgs; [
                 git
 
+                nixdoc
+
                 nixd
               ];
             };
