@@ -40,17 +40,23 @@ function but with the adition of groups:
 
 ```nix
 lib.mkInventory {
+  overlays = [];
   defaultModules = [];
   groups = { };
   hosts = { };
+  extraArgs = {};
 }
 ```
 
+- `overlays`: List of [overlays](https://wiki.nixos.org/wiki/Overlays) to add to
+  the [`nixpkgs.overlay`](https://search.nixos.org/options?show=nixpkgs.overlays)
 - `defaultModules`: List of [avalanche host modules](./docs/host.md#module) that
   will be apply to each hosts.
 - `group`: attribut set of [avalanche group modules](./docs/group.md#module)
   that will be apply to hosts that are apparte of the group.
 - `hosts`: the host specific [avalanche host modules](./docs/host.md#module).
+- `extraArgs`: Attribut set pass to [NixosSystems](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L22)
+  to pass extra argument to the modules.
 
 ### Example
 
