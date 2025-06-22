@@ -1,4 +1,6 @@
-{ lib ? (import <nixpkgs>).lib }:
+{
+  lib ? (import <nixpkgs>).lib,
+}:
 rec {
   /**
     Function to generate a nixos module that set the hostName and the domain
@@ -29,7 +31,8 @@ rec {
 
     :::
   */
-  mkHostNameModule = fqdn:
+  mkHostNameModule =
+    fqdn:
     let
       # Parse fqdn to extract domain and hostname.
       info = getFqdnInfo fqdn;
@@ -118,7 +121,8 @@ rec {
 
     :::
   */
-  getFqdnInfo = fqdn:
+  getFqdnInfo =
+    fqdn:
     let
       # Get each label that compose the fqdn (label1.label2.lable3).
       rawLabels = lib.splitString "." fqdn;
@@ -133,10 +137,10 @@ rec {
       # The domain is null if there is only one (it's the hostname).
       domain =
         if (builtins.length labels) == 1 then
-        # Null if the default non value.
+          # Null if the default non value.
           null
         else
-        # Otherwith rebuild the domain without the first label.
+          # Otherwith rebuild the domain without the first label.
           labelsToDomain (lib.drop 1 labels);
     };
 
@@ -172,7 +176,8 @@ rec {
 
     :::
   */
-  appendDomain = domain1: domain2:
+  appendDomain =
+    domain1: domain2:
     let
       # Parse first domain.
       info1 = getFqdnInfo domain1;
@@ -180,7 +185,7 @@ rec {
       info2 = getFqdnInfo domain2;
     in
     # Generate the combine domain by merging both labels and combined it back to
-      # a string.
+    # a string.
     labelsToDomain (info1.labels ++ info2.labels);
 
   /**
@@ -217,7 +222,8 @@ rec {
   */
   # Don't put the domain parameter because the appendDomain method is partialy
   # apply.
-  setDomain = fqdn:
+  setDomain =
+    fqdn:
     let
       # Parse the FQDN to be able to extract the hostname.
       info = getFqdnInfo fqdn;
@@ -261,16 +267,19 @@ rec {
   */
   # Don't put hosts argument as it's a partialy apply function and the argument
   # is directly pass to the mapAttrs' function.
-  mapHostsFqdn = f:
+  mapHostsFqdn =
+    f:
     # Use  mapAttrs' to be able to modify the name (value/config is pass
     # directly).
-    lib.mapAttrs' (fqdn: config: {
-      # The name is mapped from the input function and the previous fqdn and
-      # config.
-      name = f fqdn config;
-      # Config is juste rename as value.
-      value = config;
-    });
+    lib.mapAttrs' (
+      fqdn: config: {
+        # The name is mapped from the input function and the previous fqdn and
+        # config.
+        name = f fqdn config;
+        # Config is juste rename as value.
+        value = config;
+      }
+    );
 
   /**
     Set the domain of each hosts Full Qualifer Domain Name.
@@ -307,7 +316,8 @@ rec {
     :::
   */
   # No hosts parameter as mapHostsFqdn is partialy apply.
-  setHostsDomain = domain:
+  setHostsDomain =
+    domain:
     # Use the setDomain to set the domain on every fqdn
     mapHostsFqdn (fqdn: _: setDomain fqdn domain);
 
@@ -346,7 +356,8 @@ rec {
     :::
   */
   # No hosts parameter as appendHostsDomain is partialy apply.
-  appendHostsDomain = domain:
+  appendHostsDomain =
+    domain:
     # Use the appendDomain to append the domain on every fqdn.
     mapHostsFqdn (fqdn: _: appendDomain fqdn domain);
 
@@ -380,20 +391,17 @@ rec {
 
     :::
   */
-  importDomains = inputs:
+  importDomains =
+    inputs:
     let
-      mapping = domain: content:
+      mapping =
+        domain: content:
         let
-          hosts =
-            if builtins.isAttrs content then
-              content
-            else
-              (import content) inputs;
+          hosts = if builtins.isAttrs content then content else (import content) inputs;
         in
         appendHostsDomain domain hosts;
     in
-    lib.concatMapAttrs mapping
-  ;
+    lib.concatMapAttrs mapping;
   /**
     Modules use to define group in an Inventory.
 
@@ -438,9 +446,11 @@ rec {
 
     :::
   */
-  groupModule = { lib, ... }:
+  groupModule =
+    { lib, ... }:
     # Get lib to get typoes and mkOption
-    with lib; {
+    with lib;
+    {
       # Generate the groups option.
       options.groups = mkOption {
         # The groups option is the the names of the groups to bypass any
@@ -465,7 +475,6 @@ rec {
     `groups`
 
     : Attribute set of all the group and their configurations.
-
 
     # Type
 
@@ -504,7 +513,6 @@ rec {
 
     : Name of the group that must be check.
 
-
     # Type
 
     ```nix
@@ -539,7 +547,8 @@ rec {
 
     :::
   */
-  isInGroup = system: groupName:
+  isInGroup =
+    system: groupName:
     # Check that the group name is in the group option of the system
     # configuration.
     builtins.elem groupName system.config.groups;
@@ -559,7 +568,6 @@ rec {
     `groupName`
 
     : Name of the group that the system must be member.
-
 
     # Type
 
@@ -588,7 +596,8 @@ rec {
 
     :::
   */
-  getGroupMembers = systems: groupName:
+  getGroupMembers =
+    systems: groupName:
     # Filter attribut and check if the group name is in the system group list
     # options.
     lib.filterAttrs (_: system: isInGroup system groupName) systems;
@@ -630,13 +639,14 @@ rec {
 
     :::
   */
-  padStringLeft = padding: length: str:
+  padStringLeft =
+    padding: length: str:
     # Check if the string is at list the right size.
     if (builtins.stringLength str) < length then
-    # Call recusivly by adding  padding to the string
+      # Call recusivly by adding  padding to the string
       padStringLeft padding length (padding + str)
     else
-    # When the string size math the desire length juste return the string.
+      # When the string size math the desire length juste return the string.
       str;
 
   /**
@@ -671,7 +681,8 @@ rec {
 
     :::
   */
-  padNumber = length: n:
+  padNumber =
+    length: n:
     # Pad with 0 for the given lenth also convert the interger to string.
     padStringLeft "0" length (builtins.toString n);
 
@@ -739,7 +750,8 @@ rec {
 
     :::
   */
-  genHostname = name: id:
+  genHostname =
+    name: id:
     # Hostname is the chousen name follow by a 2 digit index.
     "${name}${genId id}";
 
@@ -776,14 +788,15 @@ rec {
 
     :::
   */
-  addSpecialArgs = specialArgs: module:
+  addSpecialArgs =
+    specialArgs: module:
     # Check if the module is a function
     if builtins.isFunction module then
-    # If it's a function wrap the module function and append special argument
-    # to the inputs.
+      # If it's a function wrap the module function and append special argument
+      # to the inputs.
       inputs: module (inputs // specialArgs)
     else
-    # If it's a attribut set juste return it.
+      # If it's a attribut set juste return it.
       module;
 
   /**
@@ -823,7 +836,8 @@ rec {
 
     :::
   */
-  genHosts = config: prefix: number:
+  genHosts =
+    config: prefix: number:
     let
       # Partialy apply genHostname with the prefix.
       genHostname' = genHostname prefix;
@@ -923,11 +937,11 @@ rec {
   */
   mkInventory =
     {
-    extraArgs ? { }
-    , overlays ? [ ]
-    , defaultModules ? [ ]
-    , groups ? { }
-    , hosts ? { }
+      extraArgs ? { },
+      overlays ? [ ],
+      defaultModules ? [ ],
+      groups ? { },
+      hosts ? { },
     }:
     let
       # Partialy apply the function with the hosts.
@@ -939,7 +953,8 @@ rec {
       groupsMembers = builtins.mapAttrs (_: getGroupMembers') groupsNames;
 
       # Function to generate base system from the given configuration and fqdn.
-      mkBaseSystem = fqdn: config:
+      mkBaseSystem =
+        fqdn: config:
         # Use nixpkgs nixosSystem function generate the base configuration.
         lib.nixosSystem {
           # Add extra agrument (depricated) to get list of groups the members of
@@ -966,7 +981,8 @@ rec {
           ] ++ defaultModules;
         };
       # Function to apply a group to a base system (by it's base name).
-      applyGroup = system: groupName:
+      applyGroup =
+        system: groupName:
         # Use the nixosSystem.extendModules fonction to apply the group.
         system.extendModules {
           # Apply special agument base on the group.
@@ -987,7 +1003,8 @@ rec {
           modules = [ groups.${groupName} ];
         };
       # Function that apply every groups define in Groups to the base configuration.
-      applyGroups = _: baseSystem:
+      applyGroups =
+        _: baseSystem:
         let
           # Get the list of system group for this host.
           systemGroups = baseSystem.config.groups;
@@ -1002,6 +1019,6 @@ rec {
       finalSystems = builtins.mapAttrs applyGroups baseSystems;
     in
     # Return the result after applying the host configuration and the group
-      # configuration.
+    # configuration.
     finalSystems;
 }
