@@ -843,6 +843,11 @@ rec {
 
     # Inputs
 
+    `overlays`
+
+    : List of [overlays](https://wiki.nixos.org/wiki/Overlays) to add to
+      [`nixpkgs.overlay`](https://search.nixos.org/options?show=nixpkgs.overlays).
+
     `extraArgs`
 
     : Attribut set to append to [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)]
@@ -914,10 +919,12 @@ rec {
     :::
   */
   mkInventory =
-    { groups ? { }
-    , hosts ? { }
+    {
+    extraArgs ? { }
+    , overlays ? [ ]
     , defaultModules ? [ ]
-    , extraArgs ? { }
+    , groups ? { }
+    , hosts ? { }
     }:
     let
       # Partialy apply the function with the hosts.
@@ -947,6 +954,8 @@ rec {
             # Generate the hostname module base on the fqdn given via the
             # attribut set.
             (mkHostNameModule fqdn)
+            # Add overlays to overide Nixpkgs packages.
+            { nixpkgs.overlays = overlays; }
             # Add group module to be able to define the `groups` option.
             groupModule
             # The input configuration from the user.

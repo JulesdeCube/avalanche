@@ -682,6 +682,11 @@ groups.
 
 ### Inputs
 
+`overlays`
+
+: List of [overlays](https://wiki.nixos.org/wiki/Overlays) to add to
+  [`nixpkgs.overlay`](https://search.nixos.org/options?show=nixpkgs.overlays).
+
 `extraArgs`
 
 : Attribut set to append to [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)]
