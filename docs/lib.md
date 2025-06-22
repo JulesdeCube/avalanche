@@ -1,7 +1,6 @@
-# Avalanche library {#sec-functions-library-inventory}
+# Avalanche library {#sec-functions-library-}
 
-
-## `lib.inventory.mkHostNameModule` {#function-library-lib.inventory.mkHostNameModule}
+## `lib.mkHostNameModule` {#function-library-lib.mkHostNameModule}
 
 Function to generate a nixos module that set the hostName and the domain
 base on the `fqdn` parameter.
@@ -14,12 +13,14 @@ base on the `fqdn` parameter.
 
 ### Type
 
-```
+```nix
 mkMostNameModule :: String -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.mkHostNameModule` usage example
 
 ```nix
@@ -31,7 +32,7 @@ hostNameModule "host1"
 
 :::
 
-## `lib.inventory.labelsToDomain` {#function-library-lib.inventory.labelsToDomain}
+## `lib.labelsToDomain` {#function-library-lib.labelsToDomain}
 
 Function that convert a list of dns labels to a full qualifer domain name.
 
@@ -43,12 +44,14 @@ Function that convert a list of dns labels to a full qualifer domain name.
 
 ### Type
 
-```
+```nix
 labelsToDomain :: [String] -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.labelsToDomain` usage example
 
 ```nix
@@ -60,7 +63,7 @@ labelsToDomain [ "node01" ]
 
 :::
 
-## `lib.inventory.getFqdnInfo` {#function-library-lib.inventory.getFqdnInfo}
+## `lib.getFqdnInfo` {#function-library-lib.getFqdnInfo}
 
 Parse a Full Qualifer Domain Name and retrive it's labels, hostname and
 domain.
@@ -73,7 +76,7 @@ domain.
 
 ### Type
 
-```
+```nix
 getFqdnInfo :: String -> {
   labels = [String];
   hostname = String;
@@ -82,7 +85,9 @@ getFqdnInfo :: String -> {
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.getFqdnInfo` usage example
 
 ```nix
@@ -102,7 +107,7 @@ labelsToDomain "node01"
 
 :::
 
-## `lib.inventory.appendDomain` {#function-library-lib.inventory.appendDomain}
+## `lib.appendDomain` {#function-library-lib.appendDomain}
 
 Append 2 domains together.
 
@@ -118,12 +123,14 @@ Append 2 domains together.
 
 ### Type
 
-```
+```nix
 appendDomain :: String -> String -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.appendDomain` usage example
 
 ```nix
@@ -135,7 +142,7 @@ appendDomain "node01" ""
 
 :::
 
-## `lib.inventory.setDomain` {#function-library-lib.inventory.setDomain}
+## `lib.setDomain` {#function-library-lib.setDomain}
 
 Set the domain part of a FQDN.
 
@@ -151,12 +158,14 @@ Set the domain part of a FQDN.
 
 ### Type
 
-```
+```nix
 setDomain :: String -> String -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.setDomain` usage example
 
 ```nix
@@ -168,7 +177,7 @@ setDomain "node01.sub-domain.domain.tld" ""
 
 :::
 
-## `lib.inventory.mapHostsFqdn` {#function-library-lib.inventory.mapHostsFqdn}
+## `lib.mapHostsFqdn` {#function-library-lib.mapHostsFqdn}
 
 Function to map/modify Full Qualifer Domain Name of an hosts attributs set
 base on a given function.
@@ -186,12 +195,14 @@ base on a given function.
 
 ### Type
 
-```
+```nix
 mapHostsFqdn :: (String -> (AttrSet | AttrSet -> AttrSet ) -> String) -> AttrSet -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.mapHostsFqdn` usage example
 
 ```nix
@@ -203,7 +214,7 @@ mapHostsFqdn (fqdn: _: nixpkgs.lib.toUpper fqdn) { ad01 = {...}: { };  dns01 = {
 
 :::
 
-## `lib.inventory.setHostsDomain` {#function-library-lib.inventory.setHostsDomain}
+## `lib.setHostsDomain` {#function-library-lib.setHostsDomain}
 
 Set the domain of each hosts Full Qualifer Domain Name.
 
@@ -219,12 +230,14 @@ Set the domain of each hosts Full Qualifer Domain Name.
 
 ### Type
 
-```
+```nix
 setHostDomain :: String -> AttrSet -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.setHostsDomain` usage example
 
 ```nix
@@ -238,7 +251,7 @@ setHostsDomain "domain.tld" { "ad01.example.com" = {...}: { };  }
 
 :::
 
-## `lib.inventory.appendHostsDomain` {#function-library-lib.inventory.appendHostsDomain}
+## `lib.appendHostsDomain` {#function-library-lib.appendHostsDomain}
 
 Append the given domain at the front of the Full Qualifer Domain Name.
 
@@ -254,12 +267,14 @@ Append the given domain at the front of the Full Qualifer Domain Name.
 
 ### Type
 
-```
+```nix
 appendHostDomain :: String -> AttrSet -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.appendHostsDomain` usage example
 
 ```nix
@@ -273,7 +288,7 @@ setHostsDomain "domain.tld" { "ad01.private" = {...}: { };  }
 
 :::
 
-## `lib.inventory.importDomains` {#function-library-lib.inventory.importDomains}
+## `lib.importDomains` {#function-library-lib.importDomains}
 
 Import sub group by passing it's inputs and append the key as domain.
 
@@ -289,12 +304,14 @@ Import sub group by passing it's inputs and append the key as domain.
 
 ### Type
 
-```
+```nix
 importDomains :: Any -> AttrSet -> AttrSet
 ```
 
 ### Example
+
 :::{.example}
+
 #### `lib.importDomains` usage example
 
 ```nix
@@ -304,22 +321,25 @@ importDomains :: Any -> AttrSet -> AttrSet
 
 :::
 
-## `lib.inventory.groupModule` {#function-library-lib.inventory.groupModule}
+## `lib.groupModule` {#function-library-lib.groupModule}
 
 Modules use to define group in an Inventory.
 
-This module is useless without the use of [`mkInventory`](#mkInventory).
+<!-- markdownlint-disable-next-line link-fragments -->
+This module is useless without the use of [`mkInventory`](#lib.mkInventory).
 
 ### Inputs
 
 ### Type
 
-```
+```nix
 groupModule :: AttrSet -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.groupModule` usage example
 
 ```nix
@@ -348,7 +368,7 @@ nixpkgs.lib.nixosSystem {
 
 :::
 
-## `lib.inventory.genGroupsNames` {#function-library-lib.inventory.genGroupsNames}
+## `lib.genGroupsNames` {#function-library-lib.genGroupsNames}
 
 Generate the attributs set of group and group name.
 
@@ -358,15 +378,16 @@ Generate the attributs set of group and group name.
 
 : Attribute set of all the group and their configurations.
 
-
 ### Type
 
-```
+```nix
 genGroupsNames :: AttrSet -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.genGroupsNames` usage example
 
 ```nix
@@ -376,7 +397,7 @@ lib.genGroupsNames { group1 = {...}: {}; group2 = {...}: {}}
 
 :::
 
-## `lib.inventory.isInGroup` {#function-library-lib.inventory.isInGroup}
+## `lib.isInGroup` {#function-library-lib.isInGroup}
 
 Check if a system configuration define that it is in the given group.
 
@@ -385,21 +406,23 @@ Check if a system configuration define that it is in the given group.
 `system`
 
 : System configuration generated from [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)
-  with the [`groupModule`](#groupModule).
+  <!-- markdownlint-disable-next-line link-fragments -->
+  with the [`groupModule`](#lib.groupModule).
 
 `groupName`
 
 : Name of the group that must be check.
 
-
 ### Type
 
-```
+```nix
 isInGroup :: AttrSet -> String -> Bool
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.isInGroup` usage example
 
 ```nix
@@ -426,7 +449,7 @@ lib.isInGroup (nixpkgs.lib.nixosSystem {
 
 :::
 
-## `lib.inventory.getGroupMembers` {#function-library-lib.inventory.getGroupMembers}
+## `lib.getGroupMembers` {#function-library-lib.getGroupMembers}
 
 Filter a attribute set of system configuration base on the membership of a
 group.
@@ -436,21 +459,23 @@ group.
 `system`
 
 : System configuration generated from [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)
-  with the [`groupModule`](#groupModule).
+  <!-- markdownlint-disable-next-line link-fragments -->
+  with the [`groupModule`](#lib.groupModule).
 
 `groupName`
 
 : Name of the group that the system must be member.
 
-
 ### Type
 
-```
+```nix
 getGroupMembers :: AttrSet -> String -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.getGroupMembers` usage example
 
 ```nix
@@ -470,7 +495,7 @@ lib.getGroupMembers {
 
 :::
 
-## `lib.inventory.padStringLeft` {#function-library-lib.inventory.padStringLeft}
+## `lib.padStringLeft` {#function-library-lib.padStringLeft}
 
 Function to pad a string with a padding patern to the given length by adding
 padding to the left.
@@ -491,12 +516,14 @@ padding to the left.
 
 ### Type
 
-```
+```nix
 padStringLeft :: String -> Int -> String -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.padStringLeft` usage example
 
 ```nix
@@ -508,7 +535,7 @@ PadStringLeft "_" 2 "toto"
 
 :::
 
-## `lib.inventory.padNumber` {#function-library-lib.inventory.padNumber}
+## `lib.padNumber` {#function-library-lib.padNumber}
 
 Function to pad a number with zero to achive the given length.
 
@@ -524,12 +551,14 @@ Function to pad a number with zero to achive the given length.
 
 ### Type
 
-```
+```nix
 padNumber :: Int -> Int -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.padNumber` usage example
 
 ```nix
@@ -541,7 +570,7 @@ PadStringLeft 2 303
 
 :::
 
-## `lib.inventory.genId` {#function-library-lib.inventory.genId}
+## `lib.genId` {#function-library-lib.genId}
 
 Function to genearate a name id.
 
@@ -553,12 +582,14 @@ Function to genearate a name id.
 
 ### Type
 
-```
+```nix
 genId :: Int -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.genId` usage example
 
 ```nix
@@ -570,7 +601,7 @@ genId 101
 
 :::
 
-## `lib.inventory.genHostname` {#function-library-lib.inventory.genHostname}
+## `lib.genHostname` {#function-library-lib.genHostname}
 
 Function to generate a hostname base on a name and id.
 
@@ -586,12 +617,14 @@ Function to generate a hostname base on a name and id.
 
 ### Type
 
-```
+```nix
 genHostname :: String -> Int -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.genHostname` usage example
 
 ```nix
@@ -603,7 +636,7 @@ genHostname "node" 20
 
 :::
 
-## `lib.inventory.addSpecialArgs` {#function-library-lib.inventory.addSpecialArgs}
+## `lib.addSpecialArgs` {#function-library-lib.addSpecialArgs}
 
 Function to wrap module and add extra speical argument to the call of a
 function or attribut set.
@@ -620,12 +653,14 @@ function or attribut set.
 
 ### Type
 
-```
+```nix
 addSpecialArgs :: AttrSet -> (AttrSet | AttrSet -> AttrSet) -> String
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.addSpecialArgs` usage example
 
 ```nix
@@ -637,7 +672,7 @@ addSpecialArgs { a = 1; } { b = 2; }
 
 :::
 
-## `lib.inventory.genHosts` {#function-library-lib.inventory.genHosts}
+## `lib.genHosts` {#function-library-lib.genHosts}
 
 Function to generate an set of host with incremental hostname base on a
 system configuration.
@@ -658,12 +693,14 @@ system configuration.
 
 ### Type
 
-```
+```nix
 genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrSet -> AttrSet)
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.genHosts` usage example
 
 ```nix
@@ -675,7 +712,7 @@ genHosts { } "empty" 0
 
 :::
 
-## `lib.inventory.mkInventory` {#function-library-lib.inventory.mkInventory}
+## `lib.mkInventory` {#function-library-lib.mkInventory}
 
 Generate each system configuration base on the input configuration and the
 groups.
@@ -706,12 +743,14 @@ groups.
 
 ### Type
 
-```
+```nix
 mkInventory :: AttrSet -> AttrSet
 ```
 
 ### Examples
+
 :::{.example}
+
 #### `lib.mkInventory` usage example
 
 ```nix
@@ -756,5 +795,3 @@ lib.mkInventory {
 ```
 
 :::
-
-

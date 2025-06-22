@@ -12,7 +12,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     mkMostNameModule :: String -> AttrSet
     ```
 
@@ -54,7 +54,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     labelsToDomain :: [String] -> String
     ```
 
@@ -89,7 +89,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     getFqdnInfo :: String -> {
       labels = [String];
       hostname = String;
@@ -155,7 +155,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     appendDomain :: String -> String -> String
     ```
 
@@ -198,7 +198,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     setDomain :: String -> String -> String
     ```
 
@@ -242,7 +242,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     mapHostsFqdn :: (String -> (AttrSet | AttrSet -> AttrSet ) -> String) -> AttrSet -> AttrSet
     ```
 
@@ -287,7 +287,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     setHostDomain :: String -> AttrSet -> AttrSet
     ```
 
@@ -326,7 +326,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     appendHostDomain :: String -> AttrSet -> AttrSet
     ```
 
@@ -365,7 +365,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     importDomains :: Any -> AttrSet -> AttrSet
     ```
 
@@ -397,13 +397,14 @@ rec {
   /**
     Modules use to define group in an Inventory.
 
-    This module is useless without the use of [`mkInventory`](#mkInventory).
+    <!-- markdownlint-disable-next-line link-fragments -->
+    This module is useless without the use of [`mkInventory`](#lib.mkInventory).
 
     # Inputs
 
     # Type
 
-    ```
+    ```nix
     groupModule :: AttrSet -> AttrSet
     ```
 
@@ -468,7 +469,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     genGroupsNames :: AttrSet -> AttrSet
     ```
 
@@ -496,7 +497,8 @@ rec {
     `system`
 
     : System configuration generated from [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)
-      with the [`groupModule`](#groupModule).
+      <!-- markdownlint-disable-next-line link-fragments -->
+      with the [`groupModule`](#lib.groupModule).
 
     `groupName`
 
@@ -505,7 +507,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     isInGroup :: AttrSet -> String -> Bool
     ```
 
@@ -551,7 +553,8 @@ rec {
     `system`
 
     : System configuration generated from [`nixpkgs.lib.nixosSystem`](https://github.com/NixOS/nixpkgs/blob/master/flake.nix#L57)
-      with the [`groupModule`](#groupModule).
+      <!-- markdownlint-disable-next-line link-fragments -->
+      with the [`groupModule`](#lib.groupModule).
 
     `groupName`
 
@@ -560,7 +563,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     getGroupMembers :: AttrSet -> String -> AttrSet
     ```
 
@@ -610,7 +613,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     padStringLeft :: String -> Int -> String -> String
     ```
 
@@ -651,7 +654,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     padNumber :: Int -> Int -> String
     ```
 
@@ -683,7 +686,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     genId :: Int -> String
     ```
 
@@ -719,7 +722,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     genHostname :: String -> Int -> String
     ```
 
@@ -756,7 +759,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     addSpecialArgs :: AttrSet -> (AttrSet | AttrSet -> AttrSet) -> String
     ```
 
@@ -803,7 +806,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrSet -> AttrSet)
     ```
 
@@ -867,7 +870,7 @@ rec {
 
     # Type
 
-    ```
+    ```nix
     mkInventory :: AttrSet -> AttrSet
     ```
 

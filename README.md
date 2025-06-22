@@ -65,7 +65,13 @@ following a `flake.nix` to deploy a loadbalanced dns server:
 
   outputs = { nixpkgs, avalanche, ... }:
     let
-      getIP = system: (builtins.elemAt system.config.networking.interfaces.eno1.ipv4.addresses 0).address;
+      getIP =
+        system:
+          (
+            builtins.elemAt
+            system.config.networking.interfaces.eno1.ipv4.addresses
+            0
+          ).address;
     in
     {
       nixosConfigurations = avalanche.lib.mkInventory {
@@ -93,21 +99,29 @@ following a `flake.nix` to deploy a loadbalanced dns server:
         hosts = {
           ns01 = { groups, ... }: {
             groups = [ groups.dns ];
-            networking.interfaces.eno1.ipv4.addresses = [{ address = "10.0.0.9"; prefixLength = 24; }];
+            networking.interfaces.eno1.ipv4.addresses = [
+              { address = "10.0.0.9"; prefixLength = 24; }
+            ];
           };
           ns02 = { groups, ... }: {
             groups = [ groups.dns ];
-            networking.interfaces.eno1.ipv4.addresses = [{ address = "10.0.0.8"; prefixLength = 24; }];
+            networking.interfaces.eno1.ipv4.addresses = [
+              { address = "10.0.0.8"; prefixLength = 24; }
+            ];
           };
 
           lb01 = { groups, groupsMembers, ... }: {
-            networking.interfaces.eno1.ipv4.addresses = [{ address = "10.0.0.1"; prefixLength = 24; }];
+            networking.interfaces.eno1.ipv4.addresses = [
+              { address = "10.0.0.1"; prefixLength = 24; }
+            ];
             services.dnsdist =
               let
                 mkServer = name: system: ''
                   newServer({address=${getIP system}, name="${name}"})
                 '';
-                servers = builtins.attrValues (builtins.mapAttrs mkServer groupsMembers.dns);
+                servers =
+                  builtins.attrValues
+                  (builtins.mapAttrs mkServer groupsMembers.dns);
               in
               {
                 enable = true;

@@ -1,0 +1,7 @@
+{
+    "default": true,
+    "no-duplicate-heading": false,
+    "line-length": {
+        "code_blocks": false
+    }
+}
