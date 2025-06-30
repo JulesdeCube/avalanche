@@ -152,11 +152,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1750528229,
-        "narHash": "sha256-109knzDjs5S0Rx5eRhBawnnGlQkSvNwzmLuXyQUsy8w=",
+        "lastModified": 1751320709,
+        "narHash": "sha256-wDn3PIzNtiseCSkqQQZ99xNQMHvWtDs2o7KE//xa6e8=",
         "ref": "refs/heads/main",
-        "rev": "0b75a071b24a1b06ef712286de76544f9ac99855",
-        "revCount": 28,
+        "rev": "1c773a636f9c4873b188c7e4f5bd2742c945722a",
+        "revCount": 29,
         "type": "git",
         "url": "https://gitlab.julesdecube.com/infra/snowball.git"
       },
