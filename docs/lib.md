@@ -601,6 +601,45 @@ genId 101
 
 :::
 
+## `lib.genHostname'` {#function-library-lib.genHostname-prime}
+
+Function to generate a hostname base on a name and id and id max length.
+
+### Inputs
+
+`length`
+
+: Max lenght of the id
+
+`name`
+
+: Base name of the server
+
+`id`
+
+: Index of the server
+
+### Type
+
+```nix
+genHostname :: Int -> String -> Int -> String
+```
+
+### Examples
+
+:::{.example}
+
+#### `lib.genHostname` usage example
+
+```nix
+genHostname "2 lb" 1
+=> "lb01"
+genHostname "5 node" 20
+=> "node00020"
+```
+
+:::
+
 ## `lib.genHostname` {#function-library-lib.genHostname}
 
 Function to generate a hostname base on a name and id.
@@ -609,7 +648,7 @@ Function to generate a hostname base on a name and id.
 
 `name`
 
-: name of the
+: Base name of the server
 
 `id`
 

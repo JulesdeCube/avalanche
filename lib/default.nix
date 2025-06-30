@@ -719,13 +719,54 @@ rec {
     padNumber 2;
 
   /**
+    Function to generate a hostname base on a name and id and id max length.
+
+    # Inputs
+
+    `length`
+
+    : Max lenght of the id
+
+    `name`
+
+    : Base name of the server
+
+    `id`
+
+    : Index of the server
+
+    # Type
+
+    ```nix
+    genHostname :: Int -> String -> Int -> String
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.genHostname` usage example
+
+    ```nix
+    genHostname "2 lb" 1
+    => "lb01"
+    genHostname "5 node" 20
+    => "node00020"
+    ```
+
+    :::
+  */
+  genHostname' =
+    length: name: id:
+    # Hostname is the chousen name follow by a 2 digit index.
+    "${name}${genId length id}";
+
+  /**
     Function to generate a hostname base on a name and id.
 
     # Inputs
 
     `name`
 
-    : name of the
+    : Base name of the server
 
     `id`
 
@@ -751,9 +792,8 @@ rec {
     :::
   */
   genHostname =
-    name: id:
-    # Hostname is the chousen name follow by a 2 digit index.
-    "${name}${genId id}";
+    # partial apply with lenght of 2.
+    genHostname' 2;
 
   /**
     Function to wrap module and add extra speical argument to the call of a
