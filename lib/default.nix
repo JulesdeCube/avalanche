@@ -841,6 +841,65 @@ rec {
 
   /**
     Function to generate an set of host with incremental hostname base on a
+    system configuration and the id lenght.
+
+    # Inputs
+
+    `length`
+
+    : Max lenght of the id
+
+    `config`
+
+    : the configuration that will be used for every host.
+
+    `prefix`
+
+    : prefix use before the incremental index
+
+    `number`
+
+    : number of host to generate
+
+    # Type
+
+    ```nix
+    genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrSet -> AttrSet)
+    ```
+
+    # Examples
+    :::{.example}
+    ## `lib.genHosts` usage example
+
+    ```nix
+    genHosts' 2 ({ ... }: { }) "lb" 2
+    => { lb01 = {...}: { };  lb02 = {...}: { }; }
+    genHosts' 10 { } "empty" 0
+    => {  }
+    ```
+
+    :::
+  */
+  genHosts' =
+    length: config: prefix: number:
+    let
+      # Partialy apply genHostname with the prefix.
+      genHostname'' = genHostname length prefix;
+      # Function that take the id and generate the hostname and identifiver
+      genHostEntry = id: {
+        # The name is the hostname (add 1 because it's start at 0).
+        name = genHostname'' (id + 1);
+        # Value is the system configuration with the id parameter append to it.
+        value = addSpecialArgs { inherit id; } config;
+      };
+      # Generate the list of all host parameter (hostanme and id).
+      hostsEntries = builtins.genList genHostEntry number;
+    in
+    # Convert the list of entry (name/value) into a attribut set.
+    builtins.listToAttrs hostsEntries;
+
+  /**
+    Function to generate an set of host with incremental hostname base on a
     system configuration.
 
     # Inputs
@@ -876,23 +935,7 @@ rec {
 
     :::
   */
-  genHosts =
-    config: prefix: number:
-    let
-      # Partialy apply genHostname with the prefix.
-      genHostname' = genHostname prefix;
-      # Function that take the id and generate the hostname and identifiver
-      genHostEntry = id: {
-        # The name is the hostname (add 1 because it's start at 0).
-        name = genHostname' (id + 1);
-        # Value is the system configuration with the id parameter append to it.
-        value = addSpecialArgs { inherit id; } config;
-      };
-      # Generate the list of all host parameter (hostanme and id).
-      hostsEntries = builtins.genList genHostEntry number;
-    in
-    # Convert the list of entry (name/value) into a attribut set.
-    builtins.listToAttrs hostsEntries;
+  genHosts = genHosts' 2;
 
   /**
     Generate each system configuration base on the input configuration and the

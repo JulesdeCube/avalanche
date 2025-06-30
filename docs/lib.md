@@ -711,6 +711,50 @@ addSpecialArgs { a = 1; } { b = 2; }
 
 :::
 
+## `lib.genHosts'` {#function-library-lib.genHosts-prime}
+
+Function to generate an set of host with incremental hostname base on a
+system configuration and the id lenght.
+
+### Inputs
+
+`length`
+
+: Max lenght of the id
+
+`config`
+
+: the configuration that will be used for every host.
+
+`prefix`
+
+: prefix use before the incremental index
+
+`number`
+
+: number of host to generate
+
+### Type
+
+```nix
+genHosts :: (AttrSet | AttrSet -> AttrSet) -> String -> Int ->  (AttrSet | AttrSet -> AttrSet)
+```
+
+### Examples
+
+:::{.example}
+
+#### `lib.genHosts` usage example
+
+```nix
+genHosts' 2 ({ ... }: { }) "lb" 2
+=> { lb01 = {...}: { };  lb02 = {...}: { }; }
+genHosts' 10 { } "empty" 0
+=> {  }
+```
+
+:::
+
 ## `lib.genHosts` {#function-library-lib.genHosts}
 
 Function to generate an set of host with incremental hostname base on a
